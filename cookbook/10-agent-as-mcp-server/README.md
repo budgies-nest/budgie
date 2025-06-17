@@ -1,1 +1,1 @@
-# Agent as a MCP Server
+# Agent as a MCP Streamable HTTP Server
