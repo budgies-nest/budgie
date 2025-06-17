@@ -1,0 +1,35 @@
+package main
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/budgies-nest/budgie/agents"
+	"github.com/budgies-nest/budgie/enums/base"
+	"github.com/openai/openai-go"
+)
+
+func main() {
+
+	bob, err := agents.NewAgent("Bob",
+		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithParams(openai.ChatCompletionNewParams{
+			Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
+			Temperature: openai.Opt(0.8),
+			Messages: []openai.ChatCompletionMessageParamUnion{
+				openai.SystemMessage("You're a helpful assistant expert with Star Trek universe."),
+				openai.UserMessage("Who is James T Kirk?"),
+			},
+		}),
+	)
+	if err != nil {
+		panic(err)
+	}
+	_, err = bob.ChatCompletionStream(func(self *agents.Agent, content string, err error) error {
+		fmt.Print(content)
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+}

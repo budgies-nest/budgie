@@ -1,0 +1,4 @@
+# Improve DX when creating an agent
+
+Create other agent constructors (like `NewAgent`) to improve the developer experience
+== simplify the creation of an agent
