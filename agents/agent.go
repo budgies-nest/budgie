@@ -2,6 +2,7 @@ package agents
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/budgies-nest/budgie/rag"
 	"github.com/mark3labs/mcp-go/client"
@@ -19,6 +20,9 @@ type Agent struct {
 
 	mcpServerConfig MCPServerConfig
 	mcpServer       *server.MCPServer
+
+	httpServerConfig HTTPServerConfig
+	httpServer       *http.ServeMux
 
 	//ToolCalls []openai.ChatCompletionMessageToolCall
 	//Instructions openai.ChatCompletionMessageParamUnion
