@@ -16,8 +16,11 @@ func (agent *Agent) ExecuteToolCalls(detectedtToolCalls []openai.ChatCompletionM
 	for _, toolCall := range detectedtToolCalls {
 		// Check if the tool is implemented
 		toolFunc, ok := toolsImpl[toolCall.Function.Name]
-		if !ok {
-			return nil, fmt.Errorf("tool %s not implemented", toolCall.Function.Name)
+
+		if !ok { // NOTE: the tool is not implemented
+			//return nil, fmt.Errorf("tool %s not implemented", toolCall.Function.Name)
+			//fmt.Printf("✋ tool %s not implemented", toolCall.Function.Name)
+			continue
 		}
 
 		var args map[string]any
@@ -47,6 +50,8 @@ func (agent *Agent) ExecuteToolCalls(detectedtToolCalls []openai.ChatCompletionM
 	return responses, nil
 }
 
+
+// TODO: check what will happend if the tool does not xist
 // ExecuteMCPStdioToolCalls executes the tool calls detected by the Agent using the MCP STDIO client.
 func (agent *Agent) ExecuteMCPStdioToolCalls(detectedtToolCalls []openai.ChatCompletionMessageToolCall) ([]string, error) {
 	responses := []string{}
