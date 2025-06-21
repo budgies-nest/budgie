@@ -30,6 +30,10 @@ if err != nil {
 
 ## Query the agent API
 
+> The agent exposes two endpoints:
+- `/api/chat`: for single response chat
+- `/api/chat-stream`: for streaming chat responses
+
 ```bash
 curl http://localhost:8080/api/chat \
 -H "Content-Type: application/json" \
