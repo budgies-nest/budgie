@@ -1,4 +1,5 @@
 # Rag (in memory) Agent
+> `agents.WithRAGMemory(chunks)` allows you to create an agent that can use a set of chunks in memory for RAG (Retrieval-Augmented Generation) tasks. The embeddings are created on the fly when the agent is initialized, and the chunks are stored in memory. This is useful for small datasets or when you want to avoid the overhead of a database.
 
 ## Create some chunks
 

@@ -16,9 +16,12 @@ func WithRAGMemory(chunks []string) AgentOption {
 		// -------------------------------------------------
 		// Create a vector store
 		// -------------------------------------------------
-		agent.Store = rag.MemoryVectorStore{
+
+		vs := rag.MemoryVectorStore{
 			Records: make(map[string]rag.VectorRecord),
 		}
+
+		agent.Store = &vs
 
 		// -------------------------------------------------
 		// Create and save the embeddings from the chunks

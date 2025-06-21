@@ -16,7 +16,10 @@ type Agent struct {
 	Name            string
 	Params          openai.ChatCompletionNewParams
 	EmbeddingParams openai.EmbeddingNewParams
-	Store           rag.MemoryVectorStore
+	
+	//Store           rag.MemoryVectorStore
+	Store rag.VectorStore
+	storeFilePath string
 
 	mcpServerConfig MCPServerConfig
 	mcpServer       *server.MCPServer
