@@ -89,8 +89,6 @@ func main() {
 				//Model: "k33g/llama-xlam-2:8b-fc-r-q2_k",
 				Model: "ai/qwen2.5:latest",
 				//Model: "ai/qwen2.5:0.5B-F16",
-				// NOTE: this model is able to detect several tool calls in a single request
-				// NOTE: but it is bad with ParallelToolCalls: openai.Bool(false)
 				Temperature: openai.Opt(0.0), // IMPORTANT: set temperature to 0.0 to ensure the agent uses the tool
 				Messages: []openai.ChatCompletionMessageParamUnion{
 					openai.UserMessage(`
@@ -103,9 +101,6 @@ func main() {
 						Multiply 2 and 3					
 					`),
 				},
-				//ParallelToolCalls: openai.Bool(false),
-				// TODO: make more test cases with this option
-				// NOTE: with small models, parallel tool calls may not work as expected
 			},
 		),
 		agents.WithTools([]openai.ChatCompletionToolParam{addTool, sayHelloTool, multiplyTool}),
