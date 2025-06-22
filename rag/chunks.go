@@ -1,8 +1,8 @@
 package rag
 
 import (
-	"os"
-	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 // ChunkText takes a text string and divides it into chunks of a specified size with a given overlap.
@@ -27,58 +27,66 @@ func ChunkText(text string, chunkSize, overlap int) []string {
 	return chunks
 }
 
-// GetContentFiles searches for files with a specific extension in the given directory and its subdirectories.
+// SplitTextWithDelimiter splits the given text using the specified delimiter and returns a slice of strings.
 //
 // Parameters:
-// - dirPath: The directory path to start the search from.
-// - ext: The file extension to search for.
+//   - text: The text to be split.
+//   - delimiter: The delimiter used to split the text.
 //
 // Returns:
-// - []string: A slice of file paths that match the given extension.
-// - error: An error if the search encounters any issues.
-func GetContentFiles(dirPath string, ext string) ([]string, error) {
-	content := []string{}
-	_, err := ForEachFile(dirPath, ext, func(path string) error {
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-
-		content = append(content, string(data))
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return content, nil
+//   - []string: A slice of strings containing the split parts of the text.
+func SplitTextWithDelimiter(text string, delimiter string) []string {
+	return strings.Split(text, delimiter)
 }
 
-// ForEachFile iterates over all files with a specific extension in a directory and its subdirectories.
-//
-// Parameters:
-// - dirPath: The root directory to start the search from.
-// - ext: The file extension to search for.
-// - callback: A function to be called for each file found.
-//
-// Returns:
-// - []string: A slice of file paths that match the given extension.
-// - error: An error if the search encounters any issues.
-func ForEachFile(dirPath string, ext string, callback func(string) error) ([]string, error) {
-	var textFiles []string
-	err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
+
+
+// SplitMarkdownBySections splits markdown content by headers (# ## ### etc.)
+// Returns a slice where each element contains a section starting with a header
+func SplitMarkdownBySections(markdown string) []string {
+	if markdown == "" {
+		return []string{}
+	}
+	
+	// Regex to match markdown headers (# ## ### etc. allowing leading whitespace)
+	headerRegex := regexp.MustCompile(`(?m)^\s*#+\s+.*$`)
+	
+	// Find all header positions
+	headerMatches := headerRegex.FindAllStringIndex(markdown, -1)
+	
+	if len(headerMatches) == 0 {
+		// No headers found, return the entire content as one section
+		return []string{strings.TrimSpace(markdown)}
+	}
+	
+	var sections []string
+	
+	// Handle content before first header
+	if headerMatches[0][0] > 0 {
+		preHeader := strings.TrimSpace(markdown[:headerMatches[0][0]])
+		if preHeader != "" {
+			sections = append(sections, preHeader)
 		}
-		if !info.IsDir() && filepath.Ext(path) == ext {
-			textFiles = append(textFiles, path)
-			err = callback(path)
-			// generate an error to stop the walk
-			if err != nil {
-				return err
-			}
+	}
+	
+	// Split by headers
+	for i, match := range headerMatches {
+		start := match[0]
+		var end int
+		
+		if i < len(headerMatches)-1 {
+			// Not the last header, end at next header
+			end = headerMatches[i+1][0]
+		} else {
+			// Last header, end at document end
+			end = len(markdown)
 		}
-		return nil
-	})
-	return textFiles, err
+		
+		section := strings.TrimSpace(markdown[start:end])
+		if section != "" {
+			sections = append(sections, section)
+		}
+	}
+	
+	return sections
 }

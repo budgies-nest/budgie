@@ -61,3 +61,4 @@ func NewAgent(name string, options ...AgentOption) (*Agent, error) {
 	}
 	return agent, nil
 }
+

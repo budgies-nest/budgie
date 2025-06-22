@@ -8,8 +8,6 @@ import (
 	"github.com/openai/openai-go"
 )
 // NOTE: this is subject to change in the future, as we are still experimenting with the best way to handle tool calls detection.
-
-// TODO:
 func (agent *Agent) AltenativeToolsCompletion() ([]openai.ChatCompletionMessageToolCall, error) {
 
 	systemContentIntroduction := `You have access to the following tools:`
@@ -160,6 +158,3 @@ func (agent *Agent) AltenativeToolsCompletion() ([]openai.ChatCompletionMessageT
 
 	return toolCalls, nil
 }
-
-// TODO: add the ability to choose another model than the current model to make the tool calls detection
-// We can create an agent for this
