@@ -17,7 +17,7 @@ func (agent *Agent) AltenativeToolsCompletion() ([]openai.ChatCompletionMessageT
 	if err != nil {
 		return nil, errors.New("error marshalling tools to JSON: " + err.Error())
 	}
-	//t.Logf("Tools JSON: %s", toolsJson)
+	
 	toolsContent := "[AVAILABLE_TOOLS]" + string(toolsJson) + "[/AVAILABLE_TOOLS]"
 
 	systemContentInstructions := `If the question of the user matched the description of a tool, the tool will be called.
@@ -47,13 +47,6 @@ func (agent *Agent) AltenativeToolsCompletion() ([]openai.ChatCompletionMessageT
 	// Add the user message to the new set of messages
 	agent.Params.Messages = newSetOfMessages
 
-	// fmt.Println("🟢", agent.clientEngine)
-	// fmt.Println("🟠", agent.Params.Messages)
-	// for idx, message := range agent.Params.Messages {
-	// 	fmt.Printf("Message %d: %s\n", idx, message.OfSystem)
-	// 	fmt.Printf("Message %d: %s\n", idx, message.OfUser)
-
-	// }
 
 	// IMPORTANT: Deactivate the tools for the next step of the completion
 	agent.Params.Tools = nil
