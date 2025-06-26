@@ -48,7 +48,7 @@ var chunks = []string{
 // go test -v -run TestCreateEmbeddings
 func TestCreateEmbeddings(t *testing.T) {
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithDMR(base.DockerModelRunnerContainerURL),
 		agents.WithEmbeddingParams(
 			openai.EmbeddingNewParams{
 				Model: "ai/mxbai-embed-large",
@@ -62,7 +62,7 @@ func TestCreateEmbeddings(t *testing.T) {
 	bob.ResetMemoryVectorStore()
 
 	for idx, chunk := range chunks {
-		_, err = bob.CreateAndSaveEmbeddingFromText(chunk, fmt.Sprintf("chunk-%d", idx+1))
+		_, err = bob.CreateAndSaveEmbeddingFromText(context.Background(), chunk, fmt.Sprintf("chunk-%d", idx+1))
 		if condition := err != nil; condition {
 			fmt.Println("😡 Error creating embedding:", err)
 			return

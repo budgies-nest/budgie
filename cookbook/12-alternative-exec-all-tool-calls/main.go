@@ -83,7 +83,7 @@ func main() {
 
 	*/
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithDMR(base.DockerModelRunnerContainerURL),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
 				//Model: "k33g/llama-xlam-2:8b-fc-r-q2_k",
@@ -111,7 +111,7 @@ func main() {
 	fmt.Println("🤖 Bob is ready to assist!", bob.Params.Tools)
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.AltenativeToolsCompletion() // TODO: test is with Ollama
+	detectedToolCalls, err := bob.AltenativeToolsCompletion(context.Background()) // TODO: test is with Ollama
 	if err != nil {
 		fmt.Println("Error:", err)
 		return

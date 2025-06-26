@@ -12,7 +12,7 @@ import (
 
 func main() {
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithDMR(base.DockerModelRunnerContainerURL),
 		agents.WithEmbeddingParams(
 			openai.EmbeddingNewParams{
 				Model: "ai/mxbai-embed-large",
@@ -26,7 +26,7 @@ func main() {
 	bob.LoadMemoryVectorStore()
 
 
-	similarities, err := bob.RAGMemorySearchSimilaritiesWithText("Who is Emma Peel?", 0.6)
+	similarities, err := bob.RAGMemorySearchSimilaritiesWithText(context.Background(), "Who is Emma Peel?", 0.6)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -36,7 +36,7 @@ func main() {
 		fmt.Println("-", similarity)
 	}
 
-	similarities, err = bob.RAGMemorySearchSimilaritiesWithText("Who is John Steed?", 0.6)
+	similarities, err = bob.RAGMemorySearchSimilaritiesWithText(context.Background(), "Who is John Steed?", 0.6)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return

@@ -32,13 +32,13 @@ var chunks = []string{
 
 func main() {
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithDMR(base.DockerModelRunnerContainerURL),
 		agents.WithEmbeddingParams(
 			openai.EmbeddingNewParams{
 				Model: "ai/mxbai-embed-large",
 			},
 		),
-		agents.WithRAGMemory(chunks),
+		agents.WithRAGMemory(context.Background(), chunks),
 		agents.WithMCPStreamableHttpServer(agents.MCPServerConfig{
 			Port:     "9090",
 			Version:  "v1",
@@ -62,7 +62,7 @@ func main() {
 	bob.AddToolToMCPServer(searchInDoc, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		args := request.GetArguments()
 		question := args["question"].(string)
-		similarities, err := bob.RAGMemorySearchSimilaritiesWithText(question, 0.7)
+		similarities, err := bob.RAGMemorySearchSimilaritiesWithText(context.Background(), question, 0.7)
 		if err != nil {
 			return nil, err
 		}

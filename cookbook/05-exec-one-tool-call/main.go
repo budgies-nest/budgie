@@ -39,7 +39,7 @@ func main() {
 		Small models are good to detect only one tool call at a time.
 	*/
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithDMR(base.DockerModelRunnerContainerURL),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
 				//Model:       "ai/qwen2.5:latest",
@@ -61,7 +61,7 @@ func main() {
 	fmt.Println("🤖 Bob is ready to assist!", bob.Params.Tools)
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.ToolsCompletion()
+	detectedToolCalls, err := bob.ToolsCompletion(context.Background())
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
