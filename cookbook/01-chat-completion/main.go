@@ -11,7 +11,7 @@ import (
 func main() {
 
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithDMR(base.DockerModelRunnerContainerURL),
 		agents.WithParams(openai.ChatCompletionNewParams{
 			Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
 			Temperature: openai.Opt(0.8),
@@ -24,7 +24,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	response, err := bob.ChatCompletion()
+	response, err := bob.ChatCompletion(context.Background())
 	if err != nil {
 		panic(err)
 	}

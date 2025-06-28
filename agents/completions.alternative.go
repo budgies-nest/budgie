@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 
@@ -8,7 +9,7 @@ import (
 	"github.com/openai/openai-go"
 )
 // NOTE: this is subject to change in the future, as we are still experimenting with the best way to handle tool calls detection.
-func (agent *Agent) AltenativeToolsCompletion() ([]openai.ChatCompletionMessageToolCall, error) {
+func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.ChatCompletionMessageToolCall, error) {
 
 	systemContentIntroduction := `You have access to the following tools:`
 	catalog := agent.Params.Tools
@@ -52,7 +53,7 @@ func (agent *Agent) AltenativeToolsCompletion() ([]openai.ChatCompletionMessageT
 	agent.Params.Tools = nil
 	// IMPORTANT: at the end of the function, we will restore the tools to the original state with the catalog variable
 
-	completion, err := agent.clientEngine.Chat.Completions.New(agent.ctx, agent.Params)
+	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
 	if err != nil {
 		agent.Params.Tools = catalog // Restore the tools in case of error
 		return nil, err
@@ -77,7 +78,7 @@ func (agent *Agent) AltenativeToolsCompletion() ([]openai.ChatCompletionMessageT
 		},
 	}
 
-	completionNext, err := agent.clientEngine.Chat.Completions.New(agent.ctx, agent.Params)
+	completionNext, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
 
 	if err != nil {
 		agent.Params.Tools = catalog // Restore the tools in case of error

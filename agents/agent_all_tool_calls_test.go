@@ -35,7 +35,7 @@ func TestAllToolCalls(t *testing.T) {
 	}
 
 	bob, err := NewAgent("Bob",
-		WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		WithDMR(base.DockerModelRunnerContainerURL),
 		WithParams(
 			openai.ChatCompletionNewParams{
 				Model:       "k33g/llama-xlam-2:8b-fc-r-q2_k", // NOTE: this model is able to detect several tool calls in a single request
@@ -60,7 +60,7 @@ func TestAllToolCalls(t *testing.T) {
 	}
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.ToolsCompletion()
+	detectedToolCalls, err := bob.ToolsCompletion(context.Background())
 	if err != nil {
 		t.Fatalf("😡 Failed to get tools completion: %v", err)
 	}

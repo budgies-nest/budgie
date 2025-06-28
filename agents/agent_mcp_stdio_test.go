@@ -14,7 +14,7 @@ import (
 func TestMCPStdioOneToolCall(t *testing.T) {
 
 	bob, err := NewAgent("Bob",
-		WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		WithDMR(base.DockerModelRunnerContainerURL),
 		WithParams(
 			openai.ChatCompletionNewParams{
 				Model: "k33g/qwen2.5:0.5b-instruct-q8_0",
@@ -37,13 +37,13 @@ func TestMCPStdioOneToolCall(t *testing.T) {
 			},
 			EnvVars{},
 		),
-		WithMCPStdioTools([]string{"say_hello"}),
+		WithMCPStdioTools(context.Background(), []string{"say_hello"}),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create agent: %v", err)
 	}
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.ToolsCompletion()
+	detectedToolCalls, err := bob.ToolsCompletion(context.Background())
 	if err != nil {
 		t.Fatalf("Failed to get tools completion: %v", err)
 	}
@@ -55,7 +55,7 @@ func TestMCPStdioOneToolCall(t *testing.T) {
 	}
 	fmt.Println("Detected Tool Calls:\n", detectedToolCallsStr)
 
-	results, err := bob.ExecuteMCPStdioToolCalls(detectedToolCalls)
+	results, err := bob.ExecuteMCPStdioToolCalls(context.Background(), detectedToolCalls)
 	if err != nil {
 		t.Fatalf("Failed to execute tool calls: %v", err)
 	}

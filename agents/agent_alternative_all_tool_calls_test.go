@@ -35,7 +35,7 @@ func TestAlternativeAllToolCalls(t *testing.T) {
 	}
 
 	bob, err := NewAgent("Bob",
-		WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		WithDMR(base.DockerModelRunnerContainerURL),
 		WithParams(
 			openai.ChatCompletionNewParams{
 				Model:       "ai/qwen2.5:latest", 
@@ -57,7 +57,7 @@ func TestAlternativeAllToolCalls(t *testing.T) {
 	}
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.AltenativeToolsCompletion()
+	detectedToolCalls, err := bob.AltenativeToolsCompletion(context.Background())
 	if err != nil {
 		t.Fatalf("😡 Failed to get tools completion: %v", err)
 	}

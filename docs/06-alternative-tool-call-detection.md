@@ -74,7 +74,7 @@ sayHelloTool := openai.ChatCompletionToolParam{
 
 ```go
 bob, err := agents.NewAgent("Bob",
-    agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+    agents.WithDMR(base.DockerModelRunnerContainerURL),
     agents.WithParams(
         openai.ChatCompletionNewParams{
             Model: "ai/qwen2.5:latest",

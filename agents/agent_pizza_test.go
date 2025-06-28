@@ -46,7 +46,7 @@ func TestHawaiianPizzaExpert(t *testing.T) {
 	}
 
 	bob, err := NewAgent("Bob",
-		WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		WithDMR(base.DockerModelRunnerContainerURL),
 		WithParams(openai.ChatCompletionNewParams{
 			Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
 			Temperature: openai.Opt(0.8),
@@ -56,7 +56,7 @@ func TestHawaiianPizzaExpert(t *testing.T) {
 	if err != nil {
 		t.Fatalf("😡 Failed to create agent: %v", err)
 	}
-	response, err := bob.ChatCompletion()
+	response, err := bob.ChatCompletion(context.Background())
 
 	if err != nil {
 		t.Fatalf("😡 Failed to get chat completion: %v", err)

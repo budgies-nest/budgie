@@ -75,11 +75,11 @@ func WithMCPStdioClient(ctx context.Context, cmd string, options STDIOCommandOpt
 // If no toolsFilter are specified, all available tools are used.
 // If toolsFilter is specified, only the tools matching the filter are used.
 // IMPORTANT: The tools are appended to the existing tools in the Agent's parameters.
-func WithMCPStdioTools(toolsFilter []string) AgentOption {
+func WithMCPStdioTools(ctx context.Context, toolsFilter []string) AgentOption {
 	return func(agent *Agent) {
 		// Get the tools from the MCP client
 		toolsRequest := mcp.ListToolsRequest{}
-		mcpTools, err := agent.mpcStdioClient.ListTools(agent.ctx, toolsRequest)
+		mcpTools, err := agent.mpcStdioClient.ListTools(ctx, toolsRequest)
 		if err != nil {
 			agent.optionError = err
 			return

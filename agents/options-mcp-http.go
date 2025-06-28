@@ -61,11 +61,11 @@ func WithMCPStreamableHttpClient(ctx context.Context, mcpHttpServerUrl string, o
 
 }
 
-func WithMCPStreamableHttpTools(toolsFilter []string) AgentOption {
+func WithMCPStreamableHttpTools(ctx context.Context, toolsFilter []string) AgentOption {
 	return func(agent *Agent) {
 		// Get the tools from the MCP client
 		toolsRequest := mcp.ListToolsRequest{}
-		mcpTools, err := agent.mcpStreamableHTTPClient.ListTools(agent.ctx, toolsRequest)
+		mcpTools, err := agent.mcpStreamableHTTPClient.ListTools(ctx, toolsRequest)
 		if err != nil {
 			agent.optionError = err
 			return

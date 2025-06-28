@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -53,7 +54,7 @@ func (agent *Agent) ExecuteToolCalls(detectedtToolCalls []openai.ChatCompletionM
 
 // TODO: check what will happend if the tool does not xist
 // ExecuteMCPStdioToolCalls executes the tool calls detected by the Agent using the MCP STDIO client.
-func (agent *Agent) ExecuteMCPStdioToolCalls(detectedtToolCalls []openai.ChatCompletionMessageToolCall) ([]string, error) {
+func (agent *Agent) ExecuteMCPStdioToolCalls(ctx context.Context, detectedtToolCalls []openai.ChatCompletionMessageToolCall) ([]string, error) {
 	responses := []string{}
 	for _, toolCall := range detectedtToolCalls {
 
@@ -69,7 +70,7 @@ func (agent *Agent) ExecuteMCPStdioToolCalls(detectedtToolCalls []openai.ChatCom
 		request.Params.Arguments = args
 
 		// Call the tool with the arguments thanks to the MCP client
-		toolResponse, err := agent.mpcStdioClient.CallTool(agent.ctx, request)
+		toolResponse, err := agent.mpcStdioClient.CallTool(ctx, request)
 		if err != nil {
 			responses = append(responses, fmt.Sprintf("%v", err))
 		} else {
@@ -96,7 +97,7 @@ func (agent *Agent) ExecuteMCPStdioToolCalls(detectedtToolCalls []openai.ChatCom
 }
 
 // ExecuteMCPStreamableHTTPToolCalls executes the tool calls detected by the Agent using the MCP Streamable HTTP client.
-func (agent *Agent) ExecuteMCPStreamableHTTPToolCalls(detectedtToolCalls []openai.ChatCompletionMessageToolCall) ([]string, error) {
+func (agent *Agent) ExecuteMCPStreamableHTTPToolCalls(ctx context.Context, detectedtToolCalls []openai.ChatCompletionMessageToolCall) ([]string, error) {
 	responses := []string{}
 	for _, toolCall := range detectedtToolCalls {
 
@@ -112,7 +113,7 @@ func (agent *Agent) ExecuteMCPStreamableHTTPToolCalls(detectedtToolCalls []opena
 		request.Params.Arguments = args
 
 		// Call the tool with the arguments thanks to the MCP client
-		toolResponse, err := agent.mcpStreamableHTTPClient.CallTool(agent.ctx, request)
+		toolResponse, err := agent.mcpStreamableHTTPClient.CallTool(ctx, request)
 		if err != nil {
 			responses = append(responses, fmt.Sprintf("%v", err))
 		} else {

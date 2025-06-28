@@ -31,7 +31,7 @@ func TestStarTrekExpert(t *testing.T) {
 	}
 
 	bob, err := NewAgent("Bob",
-		WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		WithDMR(base.DockerModelRunnerContainerURL),
 		WithParams(openai.ChatCompletionNewParams{
 			Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
 			Temperature: openai.Opt(0.8),
@@ -44,7 +44,7 @@ func TestStarTrekExpert(t *testing.T) {
 
 	fmt.Println("🐳🤖 First Chat completion result:")
 
-	response, err := bob.ChatCompletionStream(func(self *Agent, content string, err error) error {
+	response, err := bob.ChatCompletionStream(context.Background(), func(self *Agent, content string, err error) error {
 		fmt.Print(content)
 		return nil
 	})
@@ -61,7 +61,7 @@ func TestStarTrekExpert(t *testing.T) {
 
 	fmt.Println("\n\n🐳🤖 Second Chat completion result:")
 
-	response, err = bob.ChatCompletionStream(func(self *Agent, content string, err error) error {
+	response, err = bob.ChatCompletionStream(context.Background(), func(self *Agent, content string, err error) error {
 		fmt.Print(content)
 		return nil
 	})

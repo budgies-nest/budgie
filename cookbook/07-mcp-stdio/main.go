@@ -13,7 +13,7 @@ import (
 func main() {
 
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		agents.WithDMR(base.DockerModelRunnerContainerURL),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
 				Model: "k33g/qwen2.5:0.5b-instruct-q8_0",
@@ -36,7 +36,7 @@ func main() {
 			},
 			agents.EnvVars{},
 		),
-		agents.WithMCPStdioTools([]string{"say_hello"}),
+		agents.WithMCPStdioTools(context.Background(), []string{"say_hello"}),
 	)
 
 	if err != nil {
@@ -45,7 +45,7 @@ func main() {
 	fmt.Println("🤖 Bob is ready to assist!", bob.Params.Tools)
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.ToolsCompletion()
+	detectedToolCalls, err := bob.ToolsCompletion(context.Background())
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -59,7 +59,7 @@ func main() {
 	}
 	fmt.Println("Detected Tool Calls:\n", detectedToolCallsStr)
 
-	results, err := bob.ExecuteMCPStdioToolCalls(detectedToolCalls)
+	results, err := bob.ExecuteMCPStdioToolCalls(context.Background(), detectedToolCalls)
 	if err != nil {
 		fmt.Println("Error executing tool calls:", err)
 		return

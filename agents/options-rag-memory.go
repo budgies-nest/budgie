@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/budgies-nest/budgie/rag"
@@ -11,7 +12,7 @@ import (
 // It creates a MemoryVectorStore and saves the embeddings of the chunks into it.
 // The chunks should be pre-processed text data that will be used for retrieval-augmented generation (RAG).
 // It returns an AgentOption that can be used to configure the agent.
-func WithRAGMemory(chunks []string) AgentOption {
+func WithRAGMemory(ctx context.Context, chunks []string) AgentOption {
 	return func(agent *Agent) {
 		// -------------------------------------------------
 		// Create a vector store
@@ -31,7 +32,7 @@ func WithRAGMemory(chunks []string) AgentOption {
 			agent.EmbeddingParams.Input = openai.EmbeddingNewParamsInputUnion{
 				OfString: openai.String(chunk),
 			}
-			embeddingsResponse, err := agent.clientEngine.Embeddings.New(agent.ctx, agent.EmbeddingParams)
+			embeddingsResponse, err := agent.clientEngine.Embeddings.New(ctx, agent.EmbeddingParams)
 
 			if err != nil {
 				agent.optionError = fmt.Errorf("failed to create embedding for chunk: %w", err)

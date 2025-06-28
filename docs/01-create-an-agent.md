@@ -2,7 +2,7 @@
 
 ```golang
 bob, err := agents.NewAgent("Bob",
-    agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+    agents.WithDMR(base.DockerModelRunnerContainerURL),
     agents.WithParams(
         openai.ChatCompletionNewParams{
             Model: "k33g/qwen2.5:0.5b-instruct-q8_0",
