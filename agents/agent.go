@@ -1,7 +1,6 @@
 package agents
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/budgies-nest/budgie/rag"
@@ -11,7 +10,6 @@ import (
 )
 
 type Agent struct {
-	ctx             context.Context
 	clientEngine    openai.Client
 	Name            string
 	Params          openai.ChatCompletionNewParams
@@ -51,7 +49,6 @@ func NewAgent(name string, options ...AgentOption) (*Agent, error) {
 
 	agent := &Agent{}
 	agent.Name = name
-	agent.ctx = context.Background() // QUESTION: Should I use a context foe every instance?
 	// Apply all options
 	for _, option := range options {
 		option(agent)

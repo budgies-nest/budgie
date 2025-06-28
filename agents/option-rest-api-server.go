@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -72,7 +73,7 @@ func WithHTTPServer(httpServerConfig HTTPServerConfig) AgentOption {
 				agent.Params.Messages, openai.UserMessage(userContent),
 			)
 
-			answer, err := agent.ChatCompletionStream(func(self *Agent, content string, err error) error {
+			answer, err := agent.ChatCompletionStream(context.Background(), func(self *Agent, content string, err error) error {
 				response.Write([]byte(content))
 
 				flusher.Flush()
@@ -120,7 +121,7 @@ func WithHTTPServer(httpServerConfig HTTPServerConfig) AgentOption {
 				agent.Params.Messages, openai.UserMessage(userContent),
 			)
 
-			answer, err := agent.ChatCompletion()
+			answer, err := agent.ChatCompletion(context.Background())
 			if err != nil {
 				response.Write([]byte("Error: " + err.Error()))
 				return

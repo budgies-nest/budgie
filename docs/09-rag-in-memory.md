@@ -33,7 +33,7 @@ var chunks = []string{
 
 ```golang
 bob, err := agents.NewAgent("Bob",
-	agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+	agents.WithDMR(base.DockerModelRunnerContainerURL),
 	agents.WithEmbeddingParams(
 		openai.EmbeddingNewParams{
 			Model: "ai/mxbai-embed-large",

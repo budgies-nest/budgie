@@ -47,18 +47,18 @@ var chunks = []string{
 // go test -v -run TestRagMemory
 func TestRagMemory(t *testing.T) {
 	bob, err := NewAgent("Bob",
-		WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+		WithDMR(base.DockerModelRunnerContainerURL),
 		WithEmbeddingParams(
 			openai.EmbeddingNewParams{
 				Model: "ai/mxbai-embed-large",
 			},
 		),
-		WithRAGMemory(chunks),
+		WithRAGMemory(context.Background(), chunks),
 	)
 	if err != nil {
 		t.Fatalf("😡 Failed to create agent: %v", err)
 	}
-	similarities, err := bob.RAGMemorySearchSimilaritiesWithText("Who is Emma Peel?", 0.6)
+	similarities, err := bob.RAGMemorySearchSimilaritiesWithText(context.Background(), "Who is Emma Peel?", 0.6)
 	if err != nil {
 		t.Fatalf("😡 Failed to search RAG memory: %v", err)
 	}

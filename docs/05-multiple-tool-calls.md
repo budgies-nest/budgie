@@ -29,7 +29,7 @@ addTool := openai.ChatCompletionToolParam{
 
 ```golang
 bob, err := agents.NewAgent("Bob",
-    agents.WithDMR(context.Background(), base.DockerModelRunnerContainerURL),
+    agents.WithDMR(base.DockerModelRunnerContainerURL),
     agents.WithParams(
         openai.ChatCompletionNewParams{
 			Model: "k33g/llama-xlam-2:8b-fc-r-q2_k",

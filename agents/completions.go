@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"context"
 	"errors"
 
 	"github.com/openai/openai-go"
@@ -9,8 +10,8 @@ import (
 // ChatCompletion handles the chat completion request using the DMR client.
 // It sends the parameters set in the Agent and returns the response content or an error.
 // It is a synchronous operation that waits for the completion to finish.
-func (agent *Agent) ChatCompletion() (string, error) {
-	completion, err := agent.clientEngine.Chat.Completions.New(agent.ctx, agent.Params)
+func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
+	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
 
 	if err != nil {
 		return "", err
@@ -29,9 +30,9 @@ func (agent *Agent) ChatCompletion() (string, error) {
 // The callback function receives the Agent instance, the content of the chunk, and any error that occurred.
 // It returns the accumulated response content and any error that occurred during the streaming process.
 // The callback function should return an error if it wants to stop the streaming process.
-func (agent *Agent) ChatCompletionStream(callBack func(self *Agent, content string, err error) error) (string, error) {
+func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self *Agent, content string, err error) error) (string, error) {
 	response := ""
-	stream := agent.clientEngine.Chat.Completions.NewStreaming(agent.ctx, agent.Params)
+	stream := agent.clientEngine.Chat.Completions.NewStreaming(ctx, agent.Params)
 	var cbkRes error
 
 	for stream.Next() {
@@ -62,9 +63,9 @@ func (agent *Agent) ChatCompletionStream(callBack func(self *Agent, content stri
 // ToolsCompletion handles the tool calls completion request using the DMR client.
 // It sends the parameters set in the Agent and returns the detected tool calls or an error.
 // It is a synchronous operation that waits for the completion to finish.
-func (agent *Agent) ToolsCompletion() ([]openai.ChatCompletionMessageToolCall, error) {
+func (agent *Agent) ToolsCompletion(ctx context.Context) ([]openai.ChatCompletionMessageToolCall, error) {
 
-	completion, err := agent.clientEngine.Chat.Completions.New(agent.ctx, agent.Params)
+	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
 	if err != nil {
 		return nil, err
 	}

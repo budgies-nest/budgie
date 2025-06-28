@@ -1,8 +1,8 @@
 {
-	"name": "🦩SunnyTech😎",
+	"name": "🦜 Budgy",
 
 	"dockerComposeFile": "compose.yml",
-	"service": "sunny-tech-workspace",
+	"service": "budgy-workspace",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {
@@ -30,8 +30,8 @@
 		}
 	},
     "remoteEnv": {
-		//"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
-		"DMR_BASE_URL": "http://model-runner.docker.internal"
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
+		//"DMR_BASE_URL": "http://model-runner.docker.internal"
 		//"OLLAMA_BASE_URL": "http://host.docker.internal:11434"
     },
 	"forwardPorts": [3000, 4000, 8080, 9090, 7070, 6443],

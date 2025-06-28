@@ -1,16 +1,13 @@
 package agents
 
 import (
-	"context"
-
 	"github.com/budgies-nest/budgie/enums/base"
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
 )
 
-func WithDMR(ctx context.Context, baseURL string) AgentOption {
+func WithDMR(baseURL string) AgentOption {
 	return func(agent *Agent) {
-		agent.ctx = ctx
 		agent.clientEngine = openai.NewClient(
 			option.WithBaseURL(baseURL),
 			option.WithAPIKey(""),
@@ -18,9 +15,8 @@ func WithDMR(ctx context.Context, baseURL string) AgentOption {
 	}
 }
 
-func WithOpenAI(ctx context.Context, apiKey string) AgentOption {
+func WithOpenAI(apiKey string) AgentOption {
 	return func(agent *Agent) {
-		agent.ctx = ctx
 		agent.clientEngine = openai.NewClient(
 			option.WithBaseURL(base.OpenAIURL),
 			option.WithAPIKey(apiKey),
@@ -28,9 +24,8 @@ func WithOpenAI(ctx context.Context, apiKey string) AgentOption {
 	}
 }
 
-func WithOpenAIURL(ctx context.Context, baseURL string, apiKey string) AgentOption {
+func WithOpenAIURL(baseURL string, apiKey string) AgentOption {
 	return func(agent *Agent) {
-		agent.ctx = ctx
 		agent.clientEngine = openai.NewClient(
 			option.WithBaseURL(baseURL),
 			option.WithAPIKey(apiKey),

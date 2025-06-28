@@ -2,19 +2,3 @@
 /.vscode
 /env.setup.sh
 /git.sh
-
-# Compiled binaries in cookbook examples
-cookbook/*/chat-completion
-cookbook/*/chat-stream-completion
-cookbook/*/one-tool-call-completion
-cookbook/*/tool-calls-completion
-cookbook/*/exec-one-tool-call
-cookbook/*/exec-all-tool-calls
-cookbook/*/tool-calls-mcp-stdio
-cookbook/*/rag-memory
-cookbook/*/agent-as-mcp-server
-cookbook/*/rest-api-server
-cookbook/*/alternative-exec-all-tool-calls
-cookbook/*/persist-rag-memory
-cookbook/*/persist-rag-memory.test
-cookbook/*/*.test
