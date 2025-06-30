@@ -3,6 +3,7 @@ package agents
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/openai/openai-go"
 )
@@ -11,18 +12,27 @@ import (
 // It sends the parameters set in the Agent and returns the response content or an error.
 // It is a synchronous operation that waits for the completion to finish.
 func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
+	start := time.Now()
 	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
+	duration := time.Since(start)
+
+	var response string
+	var finalErr error
 
 	if err != nil {
-		return "", err
-	}
-
-	if len(completion.Choices) > 0 {
-		return completion.Choices[0].Message.Content, nil
+		finalErr = err
+	} else if len(completion.Choices) > 0 {
+		response = completion.Choices[0].Message.Content
 	} else {
-		return "", errors.New("no choices found")
-
+		finalErr = errors.New("no choices found")
 	}
+
+	agent.logger.LogChatCompletion(agent.Name, agent.Params, response, duration, finalErr)
+
+	if finalErr != nil {
+		return "", finalErr
+	}
+	return response, nil
 }
 
 // ChatCompletionStream handles the chat completion request using the DMR client in a streaming manner.
@@ -31,6 +41,7 @@ func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
 // It returns the accumulated response content and any error that occurred during the streaming process.
 // The callback function should return an error if it wants to stop the streaming process.
 func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self *Agent, content string, err error) error) (string, error) {
+	start := time.Now()
 	response := ""
 	stream := agent.clientEngine.Chat.Completions.NewStreaming(ctx, agent.Params)
 	var cbkRes error
@@ -47,16 +58,23 @@ func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self
 			break
 		}
 	}
+
+	duration := time.Since(start)
+	var finalErr error
+
 	if cbkRes != nil {
-		return response, cbkRes
-	}
-	if err := stream.Err(); err != nil {
-		return response, err
-	}
-	if err := stream.Close(); err != nil {
-		return response, err
+		finalErr = cbkRes
+	} else if err := stream.Err(); err != nil {
+		finalErr = err
+	} else if err := stream.Close(); err != nil {
+		finalErr = err
 	}
 
+	agent.logger.LogChatCompletionStream(agent.Name, agent.Params, response, duration, finalErr)
+
+	if finalErr != nil {
+		return response, finalErr
+	}
 	return response, nil
 }
 
@@ -64,14 +82,26 @@ func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self
 // It sends the parameters set in the Agent and returns the detected tool calls or an error.
 // It is a synchronous operation that waits for the completion to finish.
 func (agent *Agent) ToolsCompletion(ctx context.Context) ([]openai.ChatCompletionMessageToolCall, error) {
-
+	start := time.Now()
 	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
+	duration := time.Since(start)
+
+	var detectedToolCalls []openai.ChatCompletionMessageToolCall
+	var finalErr error
+
 	if err != nil {
-		return nil, err
+		finalErr = err
+	} else {
+		detectedToolCalls = completion.Choices[0].Message.ToolCalls
+		if len(detectedToolCalls) == 0 {
+			finalErr = errors.New("no tool calls detected")
+		}
 	}
-	detectedToolCalls := completion.Choices[0].Message.ToolCalls
-	if len(detectedToolCalls) == 0 {
-		return nil, errors.New("no tool calls detected")
+
+	agent.logger.LogToolsCompletion(agent.Name, agent.Params, detectedToolCalls, duration, finalErr)
+
+	if finalErr != nil {
+		return nil, finalErr
 	}
 	return detectedToolCalls, nil
 }
