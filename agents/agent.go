@@ -40,6 +40,9 @@ type Agent struct {
 
 	// Logger
 	logger *Logger
+
+	// Completion handlers
+	completionHandlers *CompletionHandlers
 }
 
 type AgentOption func(*Agent)
@@ -53,6 +56,7 @@ func NewAgent(name string, options ...AgentOption) (*Agent, error) {
 	agent := &Agent{}
 	agent.Name = name
 	agent.logger = GetGlobalLogger()
+	agent.completionHandlers = NewCompletionHandlers()
 	// Apply all options
 	for _, option := range options {
 		option(agent)

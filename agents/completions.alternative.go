@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/openai/openai-go"
@@ -11,13 +12,36 @@ import (
 
 // NOTE: this is subject to change in the future, as we are still experimenting with the best way to handle tool calls detection.
 func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.ChatCompletionMessageToolCall, error) {
+	start := time.Now()
+	
+	// Create context for handlers
+	handlerCtx := &AlternativeToolsCompletionContext{
+		CompletionContext: CompletionContext{
+			Agent:     agent,
+			Context:   ctx,
+			StartTime: start,
+		},
+	}
+
+	// Call before handlers
+	for _, handler := range agent.completionHandlers.BeforeAlternativeToolsCompletion {
+		handler(handlerCtx)
+	}
 
 	systemContentIntroduction := `You have access to the following tools:`
 	catalog := agent.Params.Tools
 
 	toolsJson, err := json.Marshal(catalog)
 	if err != nil {
-		return nil, errors.New("error marshalling tools to JSON: " + err.Error())
+		finalErr := errors.New("error marshalling tools to JSON: " + err.Error())
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = finalErr
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+		return nil, finalErr
 	}
 
 	toolsContent := "[AVAILABLE_TOOLS]" + string(toolsJson) + "[/AVAILABLE_TOOLS]"
@@ -56,15 +80,29 @@ func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.Cha
 	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
 	if err != nil {
 		agent.Params.Tools = catalog // Restore the tools in case of error
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = err
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, err)
 		return nil, err
-
 	}
 	if len(completion.Choices) == 0 {
 	}
 	result := completion.Choices[0].Message.Content
 	if result == "" {
 		agent.Params.Tools = catalog // Restore the tools in case of error
-		return nil, errors.New("no tool calls detected")
+		finalErr := errors.New("no tool calls detected")
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = finalErr
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+		return nil, finalErr
 	}
 
 	agent.Params.Messages = []openai.ChatCompletionMessageParamUnion{
@@ -82,17 +120,41 @@ func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.Cha
 
 	if err != nil {
 		agent.Params.Tools = catalog // Restore the tools in case of error
-		return nil, errors.New("error in the next step of tool calls completion: " + err.Error())
+		finalErr := errors.New("error in the next step of tool calls completion: " + err.Error())
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = finalErr
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+		return nil, finalErr
 	}
 
 	if len(completionNext.Choices) == 0 {
 		agent.Params.Tools = catalog // Restore the tools in case of error
-		return nil, errors.New("no choices found in the next step of tool calls completion")
+		finalErr := errors.New("no choices found in the next step of tool calls completion")
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = finalErr
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+		return nil, finalErr
 	}
 	resultNext := completionNext.Choices[0].Message.Content
 	if resultNext == "" {
 		agent.Params.Tools = catalog // Restore the tools in case of error
-		return nil, errors.New("no tool calls detected in the next step")
+		finalErr := errors.New("no tool calls detected in the next step")
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = finalErr
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+		return nil, finalErr
 	}
 
 	type Command struct {
@@ -110,11 +172,27 @@ func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.Cha
 	errJson := json.Unmarshal([]byte(resultNext), &commands)
 	if errJson != nil {
 		agent.Params.Tools = catalog // Restore the tools in case of error
-		return nil, errors.New("error unmarshalling tool calls JSON: " + errJson.Error())
+		finalErr := errors.New("error unmarshalling tool calls JSON: " + errJson.Error())
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = finalErr
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+		return nil, finalErr
 	}
 	if len(commands.FunctionCalls) == 0 {
 		agent.Params.Tools = catalog // Restore the tools in case of error
-		return nil, errors.New("no tool calls detected after unmarshalling")
+		finalErr := errors.New("no tool calls detected after unmarshalling")
+		duration := time.Since(start)
+		handlerCtx.Duration = duration
+		handlerCtx.Error = finalErr
+		for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+			handler(handlerCtx)
+		}
+		agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+		return nil, finalErr
 	}
 
 	// Create a []openai.ChatCompletionMessageToolCall from the commands
@@ -135,7 +213,15 @@ func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.Cha
 		argumentsJson, err := json.Marshal(command.Arguments)
 		if err != nil {
 			agent.Params.Tools = catalog // Restore the tools in case of error
-			return nil, errors.New("error marshalling command arguments to JSON: " + err.Error())
+			finalErr := errors.New("error marshalling command arguments to JSON: " + err.Error())
+			duration := time.Since(start)
+			handlerCtx.Duration = duration
+			handlerCtx.Error = finalErr
+			for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+				handler(handlerCtx)
+			}
+			agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, nil, duration, finalErr)
+			return nil, finalErr
 		}
 
 		toolCalls[i] = openai.ChatCompletionMessageToolCall{
@@ -148,7 +234,22 @@ func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.Cha
 		}
 	}
 
-	agent.Params.Tools = catalog // Restore the tools in case of error
+	agent.Params.Tools = catalog // Restore the tools
+
+	duration := time.Since(start)
+	
+	// Update handler context with results
+	handlerCtx.Duration = duration
+	handlerCtx.Error = nil
+	handlerCtx.ToolCalls = &toolCalls
+
+	// Call after handlers
+	for _, handler := range agent.completionHandlers.AfterAlternativeToolsCompletion {
+		handler(handlerCtx)
+	}
+
+	// Add logging for AlternativeToolsCompletion (was missing)
+	agent.logger.LogAlternativeToolsCompletion(agent.Name, agent.Params, toolCalls, duration, nil)
 
 	return toolCalls, nil
 }

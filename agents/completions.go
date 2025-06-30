@@ -13,6 +13,21 @@ import (
 // It is a synchronous operation that waits for the completion to finish.
 func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
 	start := time.Now()
+	
+	// Create context for handlers
+	handlerCtx := &ChatCompletionContext{
+		CompletionContext: CompletionContext{
+			Agent:     agent,
+			Context:   ctx,
+			StartTime: start,
+		},
+	}
+
+	// Call before handlers
+	for _, handler := range agent.completionHandlers.BeforeChatCompletion {
+		handler(handlerCtx)
+	}
+
 	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
 	duration := time.Since(start)
 
@@ -25,6 +40,16 @@ func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
 		response = completion.Choices[0].Message.Content
 	} else {
 		finalErr = errors.New("no choices found")
+	}
+
+	// Update handler context with results
+	handlerCtx.Duration = duration
+	handlerCtx.Error = finalErr
+	handlerCtx.Response = &response
+
+	// Call after handlers
+	for _, handler := range agent.completionHandlers.AfterChatCompletion {
+		handler(handlerCtx)
 	}
 
 	agent.logger.LogChatCompletion(agent.Name, agent.Params, response, duration, finalErr)
@@ -43,6 +68,22 @@ func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
 func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self *Agent, content string, err error) error) (string, error) {
 	start := time.Now()
 	response := ""
+	
+	// Create context for handlers
+	handlerCtx := &ChatCompletionStreamContext{
+		CompletionContext: CompletionContext{
+			Agent:     agent,
+			Context:   ctx,
+			StartTime: start,
+		},
+		Callback: callBack,
+	}
+
+	// Call before handlers
+	for _, handler := range agent.completionHandlers.BeforeChatCompletionStream {
+		handler(handlerCtx)
+	}
+
 	stream := agent.clientEngine.Chat.Completions.NewStreaming(ctx, agent.Params)
 	var cbkRes error
 
@@ -70,6 +111,16 @@ func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self
 		finalErr = err
 	}
 
+	// Update handler context with results
+	handlerCtx.Duration = duration
+	handlerCtx.Error = finalErr
+	handlerCtx.Response = &response
+
+	// Call after handlers
+	for _, handler := range agent.completionHandlers.AfterChatCompletionStream {
+		handler(handlerCtx)
+	}
+
 	agent.logger.LogChatCompletionStream(agent.Name, agent.Params, response, duration, finalErr)
 
 	if finalErr != nil {
@@ -83,6 +134,21 @@ func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self
 // It is a synchronous operation that waits for the completion to finish.
 func (agent *Agent) ToolsCompletion(ctx context.Context) ([]openai.ChatCompletionMessageToolCall, error) {
 	start := time.Now()
+	
+	// Create context for handlers
+	handlerCtx := &ToolsCompletionContext{
+		CompletionContext: CompletionContext{
+			Agent:     agent,
+			Context:   ctx,
+			StartTime: start,
+		},
+	}
+
+	// Call before handlers
+	for _, handler := range agent.completionHandlers.BeforeToolsCompletion {
+		handler(handlerCtx)
+	}
+
 	completion, err := agent.clientEngine.Chat.Completions.New(ctx, agent.Params)
 	duration := time.Since(start)
 
@@ -96,6 +162,16 @@ func (agent *Agent) ToolsCompletion(ctx context.Context) ([]openai.ChatCompletio
 		if len(detectedToolCalls) == 0 {
 			finalErr = errors.New("no tool calls detected")
 		}
+	}
+
+	// Update handler context with results
+	handlerCtx.Duration = duration
+	handlerCtx.Error = finalErr
+	handlerCtx.ToolCalls = &detectedToolCalls
+
+	// Call after handlers
+	for _, handler := range agent.completionHandlers.AfterToolsCompletion {
+		handler(handlerCtx)
 	}
 
 	agent.logger.LogToolsCompletion(agent.Name, agent.Params, detectedToolCalls, duration, finalErr)
