@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/openai/openai-go"
@@ -31,18 +32,25 @@ func (agent *Agent) ExecuteToolCalls(detectedtToolCalls []openai.ChatCompletionM
 		}
 
 		// Call the tool with the arguments
+		start := time.Now()
 		toolResponse, err := toolFunc(args)
+		duration := time.Since(start)
+
+		responseStr := fmt.Sprintf("%v", toolResponse)
 		if err != nil {
-			responses = append(responses, fmt.Sprintf("%v", err))
+			responseStr = fmt.Sprintf("%v", err)
+			responses = append(responses, responseStr)
+			agent.logger.LogToolExecution(agent.Name, toolCall.Function.Name, args, responseStr, duration, err)
 		} else {
-			responses = append(responses, fmt.Sprintf("%v", toolResponse))
+			responses = append(responses, responseStr)
 			agent.Params.Messages = append(
 				agent.Params.Messages,
 				openai.ToolMessage(
-					fmt.Sprintf("%v", toolResponse),
+					responseStr,
 					toolCall.ID,
 				),
 			)
+			agent.logger.LogToolExecution(agent.Name, toolCall.Function.Name, args, responseStr, duration, nil)
 		}
 	}
 	if len(responses) == 0 {
@@ -70,9 +78,14 @@ func (agent *Agent) ExecuteMCPStdioToolCalls(ctx context.Context, detectedtToolC
 		request.Params.Arguments = args
 
 		// Call the tool with the arguments thanks to the MCP client
+		start := time.Now()
 		toolResponse, err := agent.mpcStdioClient.CallTool(ctx, request)
+		duration := time.Since(start)
+
 		if err != nil {
-			responses = append(responses, fmt.Sprintf("%v", err))
+			responseStr := fmt.Sprintf("%v", err)
+			responses = append(responses, responseStr)
+			agent.logger.LogMCPToolExecution(agent.Name, toolCall.Function.Name, args, responseStr, "stdio", duration, err)
 		} else {
 			if toolResponse != nil && len(toolResponse.Content) > 0 {
 				// TODO: test if the content is a TextContent 
@@ -86,6 +99,7 @@ func (agent *Agent) ExecuteMCPStdioToolCalls(ctx context.Context, detectedtToolC
 					),
 				)
 				responses = append(responses, result)
+				agent.logger.LogMCPToolExecution(agent.Name, toolCall.Function.Name, args, result, "stdio", duration, nil)
 			}
 		}
 
@@ -113,9 +127,14 @@ func (agent *Agent) ExecuteMCPStreamableHTTPToolCalls(ctx context.Context, detec
 		request.Params.Arguments = args
 
 		// Call the tool with the arguments thanks to the MCP client
+		start := time.Now()
 		toolResponse, err := agent.mcpStreamableHTTPClient.CallTool(ctx, request)
+		duration := time.Since(start)
+
 		if err != nil {
-			responses = append(responses, fmt.Sprintf("%v", err))
+			responseStr := fmt.Sprintf("%v", err)
+			responses = append(responses, responseStr)
+			agent.logger.LogMCPToolExecution(agent.Name, toolCall.Function.Name, args, responseStr, "http", duration, err)
 		} else {
 			if toolResponse != nil && len(toolResponse.Content) > 0 {
 				// TODO: test if the content is a TextContent 
@@ -129,6 +148,7 @@ func (agent *Agent) ExecuteMCPStreamableHTTPToolCalls(ctx context.Context, detec
 					),
 				)
 				responses = append(responses, result)
+				agent.logger.LogMCPToolExecution(agent.Name, toolCall.Function.Name, args, result, "http", duration, nil)
 			}
 		}
 

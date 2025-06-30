@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/openai/openai-go"
 )
+
 // NOTE: this is subject to change in the future, as we are still experimenting with the best way to handle tool calls detection.
 func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.ChatCompletionMessageToolCall, error) {
 
@@ -18,7 +19,7 @@ func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.Cha
 	if err != nil {
 		return nil, errors.New("error marshalling tools to JSON: " + err.Error())
 	}
-	
+
 	toolsContent := "[AVAILABLE_TOOLS]" + string(toolsJson) + "[/AVAILABLE_TOOLS]"
 
 	systemContentInstructions := `If the question of the user matched the description of a tool, the tool will be called.
@@ -47,7 +48,6 @@ func (agent *Agent) AltenativeToolsCompletion(ctx context.Context) ([]openai.Cha
 
 	// Add the user message to the new set of messages
 	agent.Params.Messages = newSetOfMessages
-
 
 	// IMPORTANT: Deactivate the tools for the next step of the completion
 	agent.Params.Tools = nil

@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+	// Enable global logging at Info level
+	agents.EnableLogging(agents.LogLevelInfo)
 
 	bob, err := agents.NewAgent("Bob",
 		agents.WithDMR(base.DockerModelRunnerContainerURL),
@@ -21,6 +23,8 @@ func main() {
 				openai.UserMessage("Who is James T Kirk?"),
 			},
 		}),
+		agents.WithLoggingEnabled(),
+		agents.WithLogLevel(agents.LogLevelError),
 	)
 	if err != nil {
 		panic(err)

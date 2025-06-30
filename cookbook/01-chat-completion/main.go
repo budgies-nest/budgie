@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
 	"github.com/budgies-nest/budgie/enums/base"
@@ -9,6 +10,9 @@ import (
 )
 
 func main() {
+
+	// Enable global logging at Info level
+	agents.EnableLogging(agents.LogLevelInfo)
 
 	bob, err := agents.NewAgent("Bob",
 		agents.WithDMR(base.DockerModelRunnerContainerURL),
@@ -20,6 +24,8 @@ func main() {
 				openai.UserMessage("Who is James T Kirk?"),
 			},
 		}),
+		agents.WithLoggingEnabled(),
+		agents.WithLogLevel(agents.LogLevelDebug),
 	)
 	if err != nil {
 		panic(err)
@@ -28,5 +34,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	println("Response from Bob:", response)
+	fmt.Println("Response from Bob:", response)
+
+	// Disable logging
+	fmt.Println("\n=== Disabling Logging ===")
+	agents.DisableLogging()
 }

@@ -37,6 +37,9 @@ type Agent struct {
 	mcpStreamableHTTPClient *client.Client
 	// TODO: QUESTION: how to filter the tools?
 	// NOTE: by filteryng the tools catalog
+
+	// Logger
+	logger *Logger
 }
 
 type AgentOption func(*Agent)
@@ -49,6 +52,7 @@ func NewAgent(name string, options ...AgentOption) (*Agent, error) {
 
 	agent := &Agent{}
 	agent.Name = name
+	agent.logger = GetGlobalLogger()
 	// Apply all options
 	for _, option := range options {
 		option(agent)
