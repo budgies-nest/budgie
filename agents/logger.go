@@ -228,6 +228,42 @@ func (l *Logger) LogMCPToolExecution(agentName string, toolName string, args map
 	l.logEntry(entry)
 }
 
+func (l *Logger) LogAlternativeToolsCompletion(agentName string, request openai.ChatCompletionNewParams, toolCalls []openai.ChatCompletionMessageToolCall, duration time.Duration, err error) {
+	if !l.enabled || l.level < LogLevelInfo {
+		return
+	}
+
+	entry := LogEntry{
+		Timestamp: time.Now().UTC().Format(time.RFC3339),
+		Level:     "info",
+		Type:      "alternative_tools_completion",
+		AgentName: agentName,
+		Data: map[string]interface{}{
+			"model":            request.Model,
+			"messages_count":   len(request.Messages),
+			"tools_count":      len(request.Tools),
+			"tool_calls_count": len(toolCalls),
+			"duration_ms":      duration.Milliseconds(),
+		},
+	}
+
+	if err != nil {
+		entry.Level = "error"
+		entry.Error = err.Error()
+	} else {
+		entry.Message = fmt.Sprintf("Alternative tools completion successful with %d tool calls", len(toolCalls))
+		if l.level >= LogLevelDebug {
+			toolNames := make([]string, len(toolCalls))
+			for i, tc := range toolCalls {
+				toolNames[i] = tc.Function.Name
+			}
+			entry.Data["tool_names"] = toolNames
+		}
+	}
+
+	l.logEntry(entry)
+}
+
 func (l *Logger) LogError(agentName string, errorType string, message string, err error, context map[string]interface{}) {
 	if !l.enabled || l.level < LogLevelError {
 		return
