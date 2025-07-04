@@ -7,7 +7,9 @@ services:
       qwen2_5:
         endpoint_var: MODEL_RUNNER_BASE_URL
         model_var: MODEL_RUNNER_CHAT_MODEL
-
+    #extra_hosts:
+    #  - "model-runner.docker.internal:host-gateway"
+      
 models:
   qwen2_5:
     #model: ai/qwen2.5:0.5B-F16
