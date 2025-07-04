@@ -13,6 +13,7 @@ func main() {
 
 	// Enable global logging at Info level
 	agents.EnableLogging(agents.LogLevelInfo)
+	
 
 	bob, err := agents.NewAgent("Bob",
 		agents.WithDMR(base.DockerModelRunnerContainerURL),
