@@ -68,8 +68,8 @@ func main() {
 		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(openai.ChatCompletionNewParams{
 			//Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
-			Model:       "ai/qwen2.5:latest",
-			//Model: "unsloth/qwen3-gguf:4B-UD-Q4_K_XL",
+			//Model:       "ai/qwen2.5:latest",
+			Model: "unsloth/qwen3-gguf:4B-UD-Q4_K_XL",
 			Temperature: openai.Opt(0.8),
 			Messages: []openai.ChatCompletionMessageParamUnion{
 				openai.SystemMessage("You're a helpful assistant expert with Star Trek universe."),
