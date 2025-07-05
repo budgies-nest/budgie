@@ -116,6 +116,7 @@ func WithHTTPServer(httpServerConfig HTTPServerConfig) AgentOption {
 
 			//systemContent := data["system"]
 			userContent := data["user"]
+			// TODO: add a check about user
 
 			agent.Params.Messages = append(
 				agent.Params.Messages, openai.UserMessage(userContent),

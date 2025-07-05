@@ -1,8 +1,9 @@
 package main
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/budgies-nest/budgie/agents"
 	"github.com/budgies-nest/budgie/enums/base"
@@ -51,7 +52,7 @@ func main() {
 		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(openai.ChatCompletionNewParams{
 			//Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
-			Model:       "ai/qwen2.5:latest",
+			Model: "hf.co/unsloth/qwen3-0.6b-gguf:q4_k_m",
 			//Model: "unsloth/qwen3-gguf:4B-UD-Q4_K_XL",
 			Temperature: openai.Opt(0.8),
 			Messages: []openai.ChatCompletionMessageParamUnion{
@@ -61,14 +62,38 @@ func main() {
 		}),
 		agents.WithLoggingEnabled(),
 		agents.WithLogLevel(agents.LogLevelError),
+		agents.WithHTTPServer(agents.HTTPServerConfig{
+			Port: "5050",
+		}),
 	)
 	if err != nil {
 		panic(err)
 	}
-	_, err = bob.ChatCompletionStream(context.Background(), func(self *agents.Agent, content string, err error) error {
-		fmt.Print(content)
-		return nil
+	// TODO: check how the context is handled with the REST API
+	// _, err = bob.ChatCompletionStream(context.Background(), func(self *agents.Agent, content string, err error) error {
+	// 	fmt.Print(content)
+	// 	return nil
+	// })
+
+	bob.HttpServer().HandleFunc("POST /api/fight", func(response http.ResponseWriter, request *http.Request) {
+		body := agents.GetBytesBody(request)
+		// unmarshal the json data
+		var data map[string]string
+		err := json.Unmarshal(body, &data)
+		if err != nil {
+			response.Write([]byte("Error: " + err.Error()))
+		}
+		info := data["info"]
+
+		// QUESTION: how to add content type or somethinh help
+		response.Write([]byte(info))
+
 	})
+
+	// Start the HTTP server
+	fmt.Println("Starting HTTP server on port 5050...")
+	err = bob.StartHttpServer()
+
 	if err != nil {
 		panic(err)
 	}

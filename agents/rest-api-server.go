@@ -10,3 +10,8 @@ func (agent *Agent) StartHttpServer() error {
 
 	return errListening
 }
+
+func (agent *Agent) HttpServer() *http.ServeMux {
+	return agent.httpServer
+}
+// TODO: perhaps add a helper more straightforward
