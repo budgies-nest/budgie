@@ -1,0 +1,5 @@
+- start first with memory
+- then with JSON file
+- then with Redis
+
+add the helpers to clean/empty/reduce the conversationa memory
