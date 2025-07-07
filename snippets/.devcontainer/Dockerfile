@@ -138,6 +138,16 @@ apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 EOF
 
+# ------------------------------------
+# Install Docker Model Runner
+# Update Docker Compose
+# ------------------------------------
+RUN <<EOF
+# Add Docker's official GPG key:
+apt-get update
+apt-get install docker-model-plugin
+apt-get install docker-compose-plugin
+EOF
 
 # ------------------------------------
 # Install Python
