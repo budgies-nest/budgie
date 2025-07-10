@@ -1,4 +1,4 @@
-module fantastic-creature
+module sub-agent-with-tool
 
 go 1.24.0
 

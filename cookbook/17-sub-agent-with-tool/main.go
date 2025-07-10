@@ -5,32 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
-	"github.com/budgies-nest/budgie/enums/environments"
 
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
-func getModelRunnerBaseUrl() string {
-	// Detect if running in a container or locally
-	if helpers.DetectContainerEnvironment() == environments.Local {
-		return base.DockerModelRunnerLocalURL
-	}
-	return base.DockerModelRunnerContainerURL
-}
-
-// TODO:
-/*
-add the necessary fields to handle the health, strength, ...
-*/
-
 func main() {
 
-	modelRunnerBaseUrl := getModelRunnerBaseUrl()
+	modelRunnerBaseUrl := os.Getenv("MODEL_RUNNER_BASE_URL")
 	chatAgentName := "Bob"
 	chatAgentSystemInstructions := `
 	You are a useful agent
@@ -52,7 +38,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(toolsAgent.Name, "is ready to assist!", toolsAgent.Params.Tools)
+	fmt.Println("🛠️", toolsAgent.Name, "is ready to assist!", toolsAgent.Params.Tools)
 
 	// Enable global logging at Info level
 	//agents.EnableLogging(agents.LogLevelInfo)
@@ -74,7 +60,7 @@ func main() {
 			Port: "5050",
 		}),
 		agents.WithBeforeChatCompletionStream(func(ctx *agents.ChatCompletionStreamContext) {
-			// TODO: make the tool detection here
+			// NOTE: Start a tools detection
 
 			fmt.Println(strings.Repeat("=", 50))
 			fmt.Println("👋 Before Chat Completion Stream")
@@ -90,6 +76,7 @@ func main() {
 			// Display the messages list
 			displayMessagesList(ctx.Agent.Params.Messages)
 
+			// TOOLS DETECTION:
 			toolsAgent.AddUserMessage(msgContent)
 			// NOTE: it's simpler to call it with the fight API? or not ...
 			detectedToolCalls, err := toolsAgent.ToolsCompletion(context.Background())
@@ -107,6 +94,24 @@ func main() {
 			}
 			fmt.Println("Detected Tool Calls:\n", detectedToolCallsStr)
 
+			// TOOL CALLS:
+			results, err := toolsAgent.ExecuteToolCalls(detectedToolCalls,
+				map[string]func(any) (any, error){
+					"hello": func(args any) (any, error) {
+						name := args.(map[string]any)["name"].(string)
+						return fmt.Sprintf("👋 Hello %s! 🙂", name), nil
+					},
+				},
+			)
+			if err != nil {
+				fmt.Println("Error executing tool calls:", err)
+				return
+			}
+			fmt.Println("Tool Call Results:\n", results)
+			
+			//ctx.Agent.AddToolMessage(detectedToolCalls[0].ID, results[0]) // Assuming the first result is the one we want to use
+			//ctx.Agent.AddUserMessage(results[0])
+			ctx.Agent.AddSystemMessage("TELL THIS TO THE USER:"+ results[0])
 		}),
 
 		agents.WithAfterChatCompletionStream(func(ctx *agents.ChatCompletionStreamContext) {
@@ -124,13 +129,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// TODO: check how the context is handled with the REST API
-	// _, err = bob.ChatCompletionStream(context.Background(), func(self *agents.Agent, content string, err error) error {
-	// 	fmt.Print(content)
-	// 	return nil
-	// })
 
-	chatAgent.HttpServer().HandleFunc("POST /api/fight", func(response http.ResponseWriter, request *http.Request) {
+	chatAgent.HttpServer().HandleFunc("POST /api/info", func(response http.ResponseWriter, request *http.Request) {
 		body := agents.GetBytesBody(request)
 		// unmarshal the json data
 		var data map[string]string
@@ -140,8 +140,7 @@ func main() {
 		}
 		info := data["info"]
 
-		// QUESTION: how to add content type or somethinh help
-		response.Write([]byte(info))
+		response.Write([]byte("🤖: "+ info))
 
 	})
 
