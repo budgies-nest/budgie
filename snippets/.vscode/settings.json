@@ -262,6 +262,22 @@
             "isWholeLine": false
         },
         {
+            "text": "TOOLS DETECTION:",
+            "color": "#ffffff",
+            "backgroundColor": "#A70A0F",
+            "border": "1px solid #A70A0F",
+            "borderRadius": "3px",
+            "isWholeLine": false
+        },
+        {
+            "text": "TOOL CALLS:",
+            "color": "#ffffff",
+            "backgroundColor": "#E3141B",
+            "border": "1px solid #E3141B",
+            "borderRadius": "3px",
+            "isWholeLine": false
+        },
+        {
             "text": "TOOL 1:",
             "color": "#ffffff",
             "backgroundColor": "#27A34F",

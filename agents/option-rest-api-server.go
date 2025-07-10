@@ -51,6 +51,7 @@ func WithHTTPServer(httpServerConfig HTTPServerConfig) AgentOption {
 
 		shouldIStopTheCompletion := false
 
+		// Streaming endpoint
 		agent.httpServer.HandleFunc("POST "+agent.httpServerConfig.StreamEndPoint, func(response http.ResponseWriter, request *http.Request) {
 
 			// add a flusher
@@ -103,6 +104,7 @@ func WithHTTPServer(httpServerConfig HTTPServerConfig) AgentOption {
 		})
 		*/
 
+		// Non streaming endpoint
 		agent.httpServer.HandleFunc("POST "+agent.httpServerConfig.Endpoint, func(response http.ResponseWriter, request *http.Request) {
 
 

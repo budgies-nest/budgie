@@ -48,7 +48,7 @@ func TestHawaiianPizzaExpert(t *testing.T) {
 	bob, err := NewAgent("Bob",
 		WithDMR(base.DockerModelRunnerContainerURL),
 		WithParams(openai.ChatCompletionNewParams{
-			Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
+			Model:       "ai/qwen2.5:0.5B-F16",
 			Temperature: openai.Opt(0.8),
 			Messages:    messages,
 		}),
