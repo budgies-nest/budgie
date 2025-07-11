@@ -26,6 +26,8 @@ func main() {
 		panic("MODEL_RUNNER_CHAT_MODEL environment variable is not set")
 	}
 
+	ctx := context.Background()
+
 	bob, err := agents.NewAgent("Bob",
 		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(
@@ -41,7 +43,7 @@ func main() {
 			},
 		),
 		agents.WithMCPStdioClient(
-			context.Background(),
+			ctx,
 			"socat",
 			agents.STDIOCommandOptions{
 				"STDIO",
@@ -49,15 +51,8 @@ func main() {
 			},
 			agents.EnvVars{},
 		),
-		agents.WithMCPStdioTools(context.Background(), []string{"fetch_content", "search"}),
+		agents.WithMCPStdioTools(ctx, []string{"fetch_content", "search"}),
 	)
-
-	/*
-		"socat",
-		"STDIO",
-		"TCP:host.docker.internal:8811",
-
-	*/
 
 	if err != nil {
 		panic(err)
@@ -70,7 +65,7 @@ func main() {
 	}
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.ToolsCompletion(context.Background())
+	detectedToolCalls, err := bob.ToolsCompletion(ctx)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -84,7 +79,7 @@ func main() {
 	}
 	fmt.Println("🛠️ Detected Tool Calls:\n", detectedToolCallsStr)
 
-	results, err := bob.ExecuteMCPStdioToolCalls(context.Background(), detectedToolCalls)
+	results, err := bob.ExecuteMCPStdioToolCalls(ctx, detectedToolCalls)
 	if err != nil {
 		fmt.Println("Error executing tool calls:", err)
 		return
