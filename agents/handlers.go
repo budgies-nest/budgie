@@ -41,6 +41,13 @@ type AlternativeToolsCompletionContext struct {
 	ToolCalls *[]openai.ChatCompletionMessageToolCall // Pointer to allow modification
 }
 
+// AgentCallbackContext provides specific context for agent callback handlers
+type AgentCallbackContext struct {
+	CompletionContext
+	TaskRequest  *TaskRequest  // Pointer to allow modification
+	TaskResponse *TaskResponse // Pointer to allow modification
+}
+
 // Handler types for before and after completion events
 type (
 	// Chat completion handlers

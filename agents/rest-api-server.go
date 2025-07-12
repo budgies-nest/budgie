@@ -15,3 +15,7 @@ func (agent *Agent) HttpServer() *http.ServeMux {
 	return agent.httpServer
 }
 // TODO: perhaps add a helper more straightforward
+
+func (agent *Agent) HttpServerConfig() HTTPServerConfig {
+	return agent.httpServerConfig
+}
