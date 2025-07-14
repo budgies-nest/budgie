@@ -10,8 +10,8 @@ import (
 //
 // Parameters:
 // - root: The root directory to start the search from.
-// - ext: The file extension to search for.
-//   examples: ".md", ".html", ".txt", "*.*"
+// - ext: The file extension to search for, or ".*" to match all files.
+//   examples: ".md", ".html", ".txt", ".*"
 //
 // Returns:
 // - []string: A slice of file paths that match the given extension.
@@ -22,7 +22,7 @@ func FindFiles(dirPath string, ext string) ([]string, error) {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && filepath.Ext(path) == ext {
+		if !info.IsDir() && (ext == ".*" || filepath.Ext(path) == ext) {
 			textFiles = append(textFiles, path)
 		}
 		return nil
@@ -46,7 +46,7 @@ Otherwise, the textFiles slice and any error encountered during the search are r
 //
 // Parameters:
 // - dirPath: The root directory to start the search from.
-// - ext: The file extension to search for.
+// - ext: The file extension to search for, or ".*" to match all files.
 // - callback: A function to be called for each file found.
 //
 // Returns:
@@ -58,7 +58,7 @@ func ForEachFile(dirPath string, ext string, callback func(string) error) ([]str
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && filepath.Ext(path) == ext {
+		if !info.IsDir() && (ext == ".*" || filepath.Ext(path) == ext) {
 			textFiles = append(textFiles, path)
 			err = callback(path)
 			// generate an error to stop the walk
