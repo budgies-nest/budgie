@@ -14,9 +14,9 @@ type Agent struct {
 	Name            string
 	Params          openai.ChatCompletionNewParams
 	EmbeddingParams openai.EmbeddingNewParams
-	
+
 	//Store           rag.MemoryVectorStore
-	Store rag.VectorStore
+	Store         rag.VectorStore
 	storeFilePath string
 
 	mcpServerConfig MCPServerConfig
@@ -35,15 +35,23 @@ type Agent struct {
 	// MCP Clients
 	mpcStdioClient          *client.Client
 	mcpStreamableHTTPClient *client.Client
-	// TODO: QUESTION: how to filter the tools?
-	// NOTE: by filteryng the tools catalog
 
 	// Logger
 	logger *Logger
 
 	// Completion handlers
 	completionHandlers *CompletionHandlers
+
+	// --- A2A Server ---
+	// NOTE: This A2A protocol implementation is a subset of the A2A specification.
+	// IMPORTANT: This is a work in progress and may not cover all aspects of the A2A protocol.
+	a2aServerConfig A2AServerConfig
+	a2aServer       *http.ServeMux
+	agentCard       AgentCard
+	agentCallback   func(taskRequest TaskRequest) (TaskResponse, error)
 }
+
+
 
 type AgentOption func(*Agent)
 
@@ -66,4 +74,3 @@ func NewAgent(name string, options ...AgentOption) (*Agent, error) {
 	}
 	return agent, nil
 }
-

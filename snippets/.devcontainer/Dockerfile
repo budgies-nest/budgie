@@ -11,7 +11,6 @@ ARG TINYGO_VERSION=${TINYGO_VERSION}
 ARG EXTISM_VERSION=${EXTISM_VERSION}
 ARG NODE_MAJOR=${NODE_MAJOR}
 
-
 ARG USER_NAME=${USER_NAME}
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -33,7 +32,6 @@ apt-get clean autoclean
 apt-get autoremove --yes
 rm -rf /var/lib/{apt,dpkg,cache,log}/
 EOF
-
 
 # ------------------------------------
 # Install Go
@@ -92,7 +90,6 @@ echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.co
 apt-get update && apt-get install nodejs -y
 EOF
 
-
 # ------------------------------------
 # Install Socat to use MCP Toolkit
 # ------------------------------------
@@ -135,18 +132,7 @@ echo \
     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
     tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt-get update
-apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-EOF
-
-# ------------------------------------
-# Install Docker Model Runner
-# Update Docker Compose
-# ------------------------------------
-RUN <<EOF
-# Add Docker's official GPG key:
-apt-get update
-apt-get install docker-model-plugin
-apt-get install docker-compose-plugin
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-model-plugin
 EOF
 
 # ------------------------------------
@@ -207,18 +193,4 @@ RUN touch ~/.sudo_as_admin_successful
 # ------------------------------------
 RUN <<EOF
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
-EOF
-
-RUN <<EOF
-SNIPPETS_VERSION="0.0.1"
-SNIPPETS_OS="${TARGETOS}"
-SNIPPETS_ARCH="${TARGETARCH}"
-wget https://github.com/bots-garden/snippets/releases/download/v${SNIPPETS_VERSION}/snippets-v${SNIPPETS_VERSION}-${SNIPPETS_OS}-${SNIPPETS_ARCH}
-cp snippets-v${SNIPPETS_VERSION}-${SNIPPETS_OS}-${SNIPPETS_ARCH} snippets
-chmod +x snippets
-rm snippets-v${SNIPPETS_VERSION}-${SNIPPETS_OS}-${SNIPPETS_ARCH}
-sudo cp ./snippets /usr/bin
-rm snippets
-# check the version
-snippets version
 EOF

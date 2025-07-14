@@ -19,3 +19,7 @@ func (agent *Agent) StartMCPHttpServer() error {
 		server.WithEndpointPath(agent.mcpServerConfig.Endpoint),
 	).Start(":" + agent.mcpServerConfig.Port)
 }
+
+func (agent *Agent) MCPServerConfig() MCPServerConfig {
+	return agent.mcpServerConfig
+}
