@@ -3,7 +3,7 @@ module tool-calls-mcp-stdio
 go 1.24.0
 
 require (
-	github.com/budgies-nest/budgie v0.0.6
+	github.com/budgies-nest/budgie v0.0.7
 	github.com/openai/openai-go v1.10.0
 )
 
