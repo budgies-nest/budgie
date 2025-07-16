@@ -6,11 +6,14 @@ import (
 
 	"github.com/budgies-nest/budgie/agents"
 	"github.com/budgies-nest/budgie/enums/base"
+	"github.com/budgies-nest/budgie/enums/environments"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
+
+	modelRunnerBaseUrl := getModelRunnerBaseUrl()
 
 	addTool := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
@@ -54,7 +57,6 @@ func main() {
 		},
 	}
 
-
 	sayHelloTool := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
 			Name:        "say_hello",
@@ -83,10 +85,12 @@ func main() {
 
 	*/
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(base.DockerModelRunnerContainerURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
-				Model: "ai/qwen2.5:latest",
+				//Model: "ai/qwen2.5:latest",
+				//Model: "ai/qwen3:latest",
+				Model:       "ai/qwen3:0.6B-Q4_K_M",
 				Temperature: openai.Opt(0.0), // IMPORTANT: set temperature to 0.0 to ensure the agent uses the tool
 				Messages: []openai.ChatCompletionMessageParamUnion{
 					openai.UserMessage(`
@@ -109,7 +113,7 @@ func main() {
 	fmt.Println("🤖 Bob is ready to assist!", bob.Params.Tools)
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.AltenativeToolsCompletion(context.Background()) // TODO: test is with Ollama
+	detectedToolCalls, err := bob.AlternativeToolsCompletion(context.Background()) // TODO: test is with Ollama
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -150,4 +154,12 @@ func main() {
 		return
 	}
 
+}
+
+func getModelRunnerBaseUrl() string {
+	// Detect if running in a container or locally
+	if helpers.DetectContainerEnvironment() == environments.Local {
+		return base.DockerModelRunnerLocalURL
+	}
+	return base.DockerModelRunnerContainerURL
 }
