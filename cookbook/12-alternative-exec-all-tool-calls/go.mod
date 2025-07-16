@@ -5,7 +5,7 @@ go 1.24.0
 replace github.com/budgies-nest/budgie => ../..
 
 require (
-	github.com/budgies-nest/budgie v0.0.8
+	github.com/budgies-nest/budgie v0.0.9
 	github.com/openai/openai-go v1.8.2
 )
 
