@@ -5,7 +5,7 @@
 
 The SLMs (small Language Models) are not very good on multiple tool calls detection. They often fail to detect all the tool calls, or they detect it but do not provide the correct parameters.
 
-The budgie agent provides an alternative tool call detection mechanism that can be used to detect the tool calls in the user query with the `AltenativeToolsCompletion` method.
+The budgie agent provides an alternative tool call detection mechanism that can be used to detect the tool calls in the user query with the `AlternativeToolsCompletion` method.
 
 ## Define the tools
 
@@ -99,7 +99,7 @@ bob, err := agents.NewAgent("Bob",
 ## Run the alternative completion to detect the tool calls
 
 ```go
-detectedToolCalls, err := bob.AltenativeToolsCompletion() 
+detectedToolCalls, err := bob.AlternativeToolsCompletion() 
 ```
 
 ## Print the detected tool calls

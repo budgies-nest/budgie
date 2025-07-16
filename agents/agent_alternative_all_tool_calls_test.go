@@ -38,7 +38,7 @@ func TestAlternativeAllToolCalls(t *testing.T) {
 		WithDMR(base.DockerModelRunnerContainerURL),
 		WithParams(
 			openai.ChatCompletionNewParams{
-				Model:       "ai/qwen2.5:latest", 
+				Model:       "ai/qwen2.5:latest",
 				Temperature: openai.Opt(0.0),
 				Messages: []openai.ChatCompletionMessageParamUnion{
 					openai.UserMessage(`
@@ -57,7 +57,7 @@ func TestAlternativeAllToolCalls(t *testing.T) {
 	}
 
 	// Generate the tools detection completion
-	detectedToolCalls, err := bob.AltenativeToolsCompletion(context.Background())
+	detectedToolCalls, err := bob.AlternativeToolsCompletion(context.Background())
 	if err != nil {
 		t.Fatalf("😡 Failed to get tools completion: %v", err)
 	}
