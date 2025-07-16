@@ -16,7 +16,9 @@ find . -name '.DS_Store' -type f -delete
 
 git add .
 git commit -m "📦 ${ABOUT}"
-git push
+#git push
+git push origin main
+
 
 git tag -a ${TAG} -m "${ABOUT}"
 git push origin ${TAG}
