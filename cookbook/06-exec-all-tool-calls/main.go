@@ -6,11 +6,13 @@ import (
 
 	"github.com/budgies-nest/budgie/agents"
 	"github.com/budgies-nest/budgie/enums/base"
+	"github.com/budgies-nest/budgie/enums/environments"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
+	modelRunnerBaseUrl := getModelRunnerBaseUrl()
 
 	addTool := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
@@ -61,10 +63,11 @@ func main() {
 
 	*/
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(base.DockerModelRunnerContainerURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
-				Model: "k33g/llama-xlam-2:8b-fc-r-q2_k",
+				//Model: "k33g/llama-xlam-2:8b-fc-r-q2_k",
+				Model: "hf.co/salesforce/xlam-2-3b-fc-r-gguf:q3_k_l",
 				// NOTE: this model is able to detect several tool calls in a single request
 				// NOTE: but it is bad with ParallelToolCalls: openai.Bool(false)
 				Temperature: openai.Opt(0.0), // IMPORTANT: set temperature to 0.0 to ensure the agent uses the tool
@@ -125,4 +128,12 @@ func main() {
 	}
 	fmt.Println("Results of Tool Calls:\n", results)
 
+}
+
+func getModelRunnerBaseUrl() string {
+	// Detect if running in a container or locally
+	if helpers.DetectContainerEnvironment() == environments.Local {
+		return base.DockerModelRunnerLocalURL
+	}
+	return base.DockerModelRunnerContainerURL
 }

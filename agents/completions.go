@@ -13,7 +13,7 @@ import (
 // It is a synchronous operation that waits for the completion to finish.
 func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
 	start := time.Now()
-	
+
 	// Create context for handlers
 	handlerCtx := &ChatCompletionContext{
 		CompletionContext: CompletionContext{
@@ -68,7 +68,7 @@ func (agent *Agent) ChatCompletion(ctx context.Context) (string, error) {
 func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self *Agent, content string, err error) error) (string, error) {
 	start := time.Now()
 	response := ""
-	
+
 	// Create context for handlers
 	handlerCtx := &ChatCompletionStreamContext{
 		CompletionContext: CompletionContext{
@@ -134,7 +134,7 @@ func (agent *Agent) ChatCompletionStream(ctx context.Context, callBack func(self
 // It is a synchronous operation that waits for the completion to finish.
 func (agent *Agent) ToolsCompletion(ctx context.Context) ([]openai.ChatCompletionMessageToolCall, error) {
 	start := time.Now()
-	
+
 	// Create context for handlers
 	handlerCtx := &ToolsCompletionContext{
 		CompletionContext: CompletionContext{

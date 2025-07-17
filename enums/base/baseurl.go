@@ -8,4 +8,7 @@ const (
 	DockerModelRunnerDockerCloudURL = "http://172.17.0.1:12435/engines/llama.cpp/v1"
 
 	OpenAIURL = "https://api.openai.com/v1"
+
+	OllamaLocalURL = "http://localhost:11434/v1"
+	OllamaContainerURL = "http://host.docker.internal:11434/v1"
 )
