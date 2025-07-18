@@ -5,14 +5,12 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
-	"github.com/budgies-nest/budgie/enums/environments"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
-	modelRunnerBaseUrl := getModelRunnerBaseUrl()
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	addTool := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
@@ -51,17 +49,6 @@ func main() {
 		},
 	}
 
-	/*
-		Some small model are able to detect several tool calls in a single request.
-		So let ParallelToolCalls set to openai.Bool(true), then the model will detect all the tool calls in a single request.
-
-		Models that are able to detect several tool calls in a single request:
-		- ignaciolopezluna020/llama-xlam:8B-Q4_K_M
-		- k33g/llama-xlam-2:8b-fc-r-q2_k
-		  - https://huggingface.co/Salesforce/Llama-xLAM-2-8b-fc-r-gguf
-		  - Llama-xLAM-2-8B-fc-r-Q2_K.gguf
-
-	*/
 	bob, err := agents.NewAgent("Bob",
 		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(
@@ -128,12 +115,4 @@ func main() {
 	}
 	fmt.Println("Results of Tool Calls:\n", results)
 
-}
-
-func getModelRunnerBaseUrl() string {
-	// Detect if running in a container or locally
-	if helpers.DetectContainerEnvironment() == environments.Local {
-		return base.DockerModelRunnerLocalURL
-	}
-	return base.DockerModelRunnerContainerURL
 }

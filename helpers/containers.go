@@ -5,6 +5,9 @@ import (
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/budgies-nest/budgie/enums/base"
+	"github.com/budgies-nest/budgie/enums/environments"
 )
 
 func DetectContainerEnvironment() string {
@@ -74,4 +77,12 @@ func detectMacOSContainer() string {
 	}
 
 	return "Local"
+}
+
+func GetModelRunnerBaseUrl() string {
+	// Detect if running in a container or locally
+	if DetectContainerEnvironment() == environments.Local {
+		return base.DockerModelRunnerLocalURL
+	}
+	return base.DockerModelRunnerContainerURL
 }

@@ -5,15 +5,13 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
-	"github.com/budgies-nest/budgie/enums/environments"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
 
-	modelRunnerBaseUrl := getModelRunnerBaseUrl()
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	addTool := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
@@ -154,12 +152,4 @@ func main() {
 		return
 	}
 
-}
-
-func getModelRunnerBaseUrl() string {
-	// Detect if running in a container or locally
-	if helpers.DetectContainerEnvironment() == environments.Local {
-		return base.DockerModelRunnerLocalURL
-	}
-	return base.DockerModelRunnerContainerURL
 }

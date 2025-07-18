@@ -81,7 +81,7 @@ func main() {
 		msgContent, _ := ctx.Agent.GetLastUserMessageContent()
 		toolsAgent.AddUserMessage(msgContent)
 
-		detectedToolCalls, err := toolsAgent.ToolsCompletion(context.Background())
+		detectedToolCalls, err := toolsAgent.AlternativeToolsCompletion(context.Background())
 
 		if err != nil {
 			fmt.Println("🔴 Error when detecting tool calls:", err)

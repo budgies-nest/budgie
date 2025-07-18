@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
+	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
@@ -47,8 +47,11 @@ var chunks = []string{
 
 // go test -v -run TestCreateEmbeddings
 func TestCreateEmbeddings(t *testing.T) {
+
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
+
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(base.DockerModelRunnerContainerURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithEmbeddingParams(
 			openai.EmbeddingNewParams{
 				Model: "ai/mxbai-embed-large",

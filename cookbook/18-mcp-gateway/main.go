@@ -5,16 +5,16 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
 	ctx := context.Background()
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(base.DockerModelRunnerLocalURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
 				Model:       "ai/qwen2.5:latest",

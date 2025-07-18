@@ -2,23 +2,13 @@ package main
 
 import (
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
-	"github.com/budgies-nest/budgie/enums/environments"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
-func getModelRunnerBaseUrl() string {
-	// Detect if running in a container or locally
-	if helpers.DetectContainerEnvironment() == environments.Local {
-		return base.DockerModelRunnerLocalURL
-	}
-	return base.DockerModelRunnerContainerURL
-}
-
 func main() {
 
-	modelRunnerBaseUrl := getModelRunnerBaseUrl()
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	// Create a new agent named Bob
 	bob, err := agents.NewAgent("Bob",

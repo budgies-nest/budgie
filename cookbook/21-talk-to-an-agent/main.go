@@ -4,15 +4,13 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
-	"github.com/budgies-nest/budgie/enums/environments"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/google/uuid"
 	"github.com/openai/openai-go"
 )
 
 func main() {
-	modelRunnerBaseUrl := getModelRunnerBaseUrl()
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	sam, err := agents.NewAgent("Bob",
 		agents.WithDMR(modelRunnerBaseUrl),
@@ -77,12 +75,4 @@ func main() {
 
 	fmt.Println("🟣 Task Response Text:", taskResponse.Result.History[0].Parts[0].Text)
 
-}
-
-func getModelRunnerBaseUrl() string {
-	// Detect if running in a container or locally
-	if helpers.DetectContainerEnvironment() == environments.Local {
-		return base.DockerModelRunnerLocalURL
-	}
-	return base.DockerModelRunnerContainerURL
 }

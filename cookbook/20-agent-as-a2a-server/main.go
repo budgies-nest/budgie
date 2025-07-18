@@ -5,14 +5,12 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
-	"github.com/budgies-nest/budgie/enums/environments"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
-	modelRunnerBaseUrl := getModelRunnerBaseUrl()
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	bob, err := agents.NewAgent("Bob",
 		agents.WithDMR(modelRunnerBaseUrl),
@@ -20,7 +18,7 @@ func main() {
 			openai.ChatCompletionNewParams{
 				//Model:       "ai/qwen2.5:latest",
 				// REF: https://huggingface.co/bartowski/SmolLM2-135M-Instruct-GGUF
-				Model: "hf.co/bartowski/smollm2-135m-instruct-gguf:q4_k_m",
+				Model:       "hf.co/bartowski/smollm2-135m-instruct-gguf:q4_k_m",
 				Temperature: openai.Opt(0.0),
 				Messages:    []openai.ChatCompletionMessageParamUnion{},
 			},
@@ -119,12 +117,4 @@ func main() {
 		panic(errSrv)
 	}
 
-}
-
-func getModelRunnerBaseUrl() string {
-	// Detect if running in a container or locally
-	if helpers.DetectContainerEnvironment() == environments.Local {
-		return base.DockerModelRunnerLocalURL
-	}
-	return base.DockerModelRunnerContainerURL
 }

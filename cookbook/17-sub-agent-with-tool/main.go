@@ -15,8 +15,9 @@ import (
 )
 
 func main() {
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
-	modelRunnerBaseUrl := os.Getenv("MODEL_RUNNER_BASE_URL")
+	//modelRunnerBaseUrl := os.Getenv("MODEL_RUNNER_BASE_URL")
 	chatAgentName := "Bob"
 	chatAgentSystemInstructions := `
 	You are a useful agent

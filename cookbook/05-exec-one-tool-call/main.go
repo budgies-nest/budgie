@@ -5,12 +5,13 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
+
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	addTool := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
@@ -39,11 +40,11 @@ func main() {
 		Small models are good to detect only one tool call at a time.
 	*/
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(base.DockerModelRunnerContainerURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
 				//Model:       "ai/qwen2.5:latest",
-				Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
+				Model:       "hf.co/salesforce/xlam-2-3b-fc-r-gguf:q3_k_l",
 				Temperature: openai.Opt(0.0), // IMPORTANT: set temperature to 0.0 to ensure the agent uses the tool
 				Messages: []openai.ChatCompletionMessageParamUnion{
 					openai.UserMessage(`

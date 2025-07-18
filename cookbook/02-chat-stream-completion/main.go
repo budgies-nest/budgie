@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
-	"github.com/budgies-nest/budgie/enums/environments"
 
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
@@ -32,17 +30,9 @@ curl http://localhost:12434/engines/llama.cpp/v1/chat/completions \
 }'
 */
 
-func getModelRunnerBaseUrl() string {
-	// Detect if running in a container or locally
-	if helpers.DetectContainerEnvironment() == environments.Local {
-		return base.DockerModelRunnerLocalURL
-	}
-	return base.DockerModelRunnerContainerURL
-}
-
 func main() {
 
-	modelRunnerBaseUrl := getModelRunnerBaseUrl()
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	// Enable global logging at Info level
 	//agents.EnableLogging(agents.LogLevelInfo)
@@ -51,7 +41,7 @@ func main() {
 		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(openai.ChatCompletionNewParams{
 			//Model:       "k33g/qwen2.5:0.5b-instruct-q8_0",
-			Model:       "ai/qwen2.5:latest",
+			Model: "ai/qwen2.5:latest",
 			//Model: "unsloth/qwen3-gguf:4B-UD-Q4_K_XL",
 			Temperature: openai.Opt(0.8),
 			Messages: []openai.ChatCompletionMessageParamUnion{

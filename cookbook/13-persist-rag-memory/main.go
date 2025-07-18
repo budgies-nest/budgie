@@ -5,14 +5,15 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
+	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
-
 func main() {
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
+
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(base.DockerModelRunnerContainerURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithEmbeddingParams(
 			openai.EmbeddingNewParams{
 				Model: "ai/mxbai-embed-large",
@@ -24,7 +25,6 @@ func main() {
 		panic(err)
 	}
 	bob.LoadMemoryVectorStore()
-
 
 	similarities, err := bob.RAGMemorySearchSimilaritiesWithText(context.Background(), "Who is Emma Peel?", 0.6)
 	if err != nil {

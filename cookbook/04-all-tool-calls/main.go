@@ -5,12 +5,13 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
 	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
+
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	addTool := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
@@ -33,22 +34,12 @@ func main() {
 		},
 	}
 
-	/*
-		Some small model are able to detect several tool calls in a single request.
-		So let ParallelToolCalls set to openai.Bool(true), then the model will detect all the tool calls in a single request.
-
-		Models that are able to detect several tool calls in a single request:
-		- ignaciolopezluna020/llama-xlam:8B-Q4_K_M
-		- k33g/llama-xlam-2:8b-fc-r-q2_k
-		  - https://huggingface.co/Salesforce/Llama-xLAM-2-8b-fc-r-gguf
-		  - Llama-xLAM-2-8B-fc-r-Q2_K.gguf
-
-	*/
 	bob, err := agents.NewAgent("Bob",
-		agents.WithDMR(base.DockerModelRunnerContainerURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(
 			openai.ChatCompletionNewParams{
-				Model: "k33g/llama-xlam-2:8b-fc-r-q2_k", // NOTE: this model is able to detect several tool calls in a single request
+				Model: "hf.co/salesforce/xlam-2-3b-fc-r-gguf:q3_k_l",
+				// NOTE: this model is able to detect several tool calls in a single request
 				//Model:       "ai/qwen2.5:latest",
 				//Model: "k33g/qwen2.5:0.5b-instruct-q8_0",
 				Temperature: openai.Opt(0.0), // IMPORTANT: set temperature to 0.0 to ensure the agent uses the tool

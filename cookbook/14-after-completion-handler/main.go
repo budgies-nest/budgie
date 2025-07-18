@@ -5,21 +5,21 @@ import (
 	"fmt"
 
 	"github.com/budgies-nest/budgie/agents"
-	"github.com/budgies-nest/budgie/enums/base"
+	"github.com/budgies-nest/budgie/helpers"
 	"github.com/openai/openai-go"
 )
 
 func main() {
+	modelRunnerBaseUrl := helpers.GetModelRunnerBaseUrl()
 
 	// Enable global logging at Info level
 	agents.EnableLogging(agents.LogLevelInfo)
 
 	alice, err := agents.NewAgent("Alice",
-		agents.WithDMR(base.DockerModelRunnerContainerURL),
+		agents.WithDMR(modelRunnerBaseUrl),
 		agents.WithParams(openai.ChatCompletionNewParams{
-			//Model:       "ai/gemma3n:2B-Q4_K_M",
-			//Model: "ai/qwen2.5:0.5B-F16",
-			Model: "k33g/qwen2.5:0.5b-instruct-q2_k",
+			Model: "ai/qwen2.5:0.5B-F16",
+			//Model: "k33g/qwen2.5:0.5b-instruct-q2_k",
 
 			Temperature: openai.Opt(0.1),
 			Messages: []openai.ChatCompletionMessageParamUnion{
