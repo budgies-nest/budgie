@@ -5,9 +5,9 @@ go 1.24.0
 replace github.com/budgies-nest/budgie => ../..
 
 require (
-	github.com/budgies-nest/budgie v0.0.9
+	github.com/budgies-nest/budgie v0.1.0
 	github.com/google/uuid v1.6.0
-	github.com/openai/openai-go v1.10.3
+	github.com/openai/openai-go v1.11.0
 )
 
 require (

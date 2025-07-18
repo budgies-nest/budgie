@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/budgies-nest/budgie/agents"
@@ -109,10 +108,10 @@ func main() {
 				return
 			}
 			fmt.Println("Tool Call Results:\n", results)
-			
+
 			//ctx.Agent.AddToolMessage(detectedToolCalls[0].ID, results[0]) // Assuming the first result is the one we want to use
 			//ctx.Agent.AddUserMessage(results[0])
-			ctx.Agent.AddSystemMessage("TELL THIS TO THE USER:"+ results[0])
+			ctx.Agent.AddSystemMessage("TELL THIS TO THE USER:" + results[0])
 		}),
 
 		agents.WithAfterChatCompletionStream(func(ctx *agents.ChatCompletionStreamContext) {
@@ -141,7 +140,7 @@ func main() {
 		}
 		info := data["info"]
 
-		response.Write([]byte("🤖: "+ info))
+		response.Write([]byte("🤖: " + info))
 
 	})
 
