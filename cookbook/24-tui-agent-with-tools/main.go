@@ -11,12 +11,11 @@ import (
 )
 
 type Werewolf struct {
-	Health	   float64
-	Strength   float64
-	Agility    float64
+	Health       float64
+	Strength     float64
+	Agility      float64
 	Intelligence float64
 }
-
 
 func main() {
 
@@ -76,12 +75,13 @@ func main() {
 	// It can be used to detect tools and handle them accordingly.
 	toolsDetectionHandler := func(ctx *agents.ChatCompletionStreamContext) {
 		toolsAgent.ClearMessages()
-		fmt.Println("⏳ Tools detection in progress by:", ctx.Agent.Name	)
+		fmt.Println("⏳ Tools detection in progress by:", ctx.Agent.Name)
 		// TOOLS DETECTION:
 		msgContent, _ := ctx.Agent.GetLastUserMessageContent()
 		toolsAgent.AddUserMessage(msgContent)
 
 		detectedToolCalls, err := toolsAgent.AlternativeToolsCompletion(context.Background())
+		//detectedToolCalls, err := toolsAgent.ToolsCompletion(context.Background())
 
 		if err != nil {
 			fmt.Println("🔴 Error when detecting tool calls:", err)
@@ -155,7 +155,7 @@ func toolsCatalog() []openai.ChatCompletionToolParam {
 		Function: openai.FunctionDefinitionParam{
 			Name:        "get_health",
 			Description: openai.String("Get the health of the Werewolf"),
-			Parameters: openai.FunctionParameters{},
+			Parameters:  openai.FunctionParameters{},
 		},
 	}
 
@@ -214,11 +214,11 @@ func toolsCatalog() []openai.ChatCompletionToolParam {
 		Function: openai.FunctionDefinitionParam{
 			Name:        "get_intelligence",
 			Description: openai.String("Get the intelligence of the Werewolf"),
-			Parameters: openai.FunctionParameters{},
+			Parameters:  openai.FunctionParameters{},
 		},
 	}
-	
-	setIntelligence := openai.ChatCompletionToolParam{	
+
+	setIntelligence := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
 			Name:        "set_intelligence",
 			Description: openai.String("Set the intelligence of the Werewolf"),
@@ -234,7 +234,7 @@ func toolsCatalog() []openai.ChatCompletionToolParam {
 			},
 		},
 	}
-	
+
 	increaseIntelligence := openai.ChatCompletionToolParam{
 		Function: openai.FunctionDefinitionParam{
 			Name:        "increase_intelligence",
@@ -269,9 +269,8 @@ func toolsCatalog() []openai.ChatCompletionToolParam {
 		},
 	}
 
-
 	return []openai.ChatCompletionToolParam{
-		getHealth, setHealth, increaseHealth, decreaseHealth, 
+		getHealth, setHealth, increaseHealth, decreaseHealth,
 		getIntelligence, setIntelligence, increaseIntelligence, decreaseIntelligence,
 		// Add more tools as needed
 	}
